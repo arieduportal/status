@@ -6,9 +6,10 @@ const config = {
   kit: {
     adapter: adapter({
       edge: false,
-      assets: {
-        binding: "ASSETS",
-      },
+      routes: {
+        includes: ['/*'],
+        exclude: ['<build>']
+      }
     }),
     alias: {
       $components: "src/components",
