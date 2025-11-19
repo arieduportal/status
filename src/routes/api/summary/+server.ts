@@ -22,7 +22,7 @@ export const GET: RequestHandler = async ({ cookies }) => {
       },
       body: JSON.stringify({
         domains: domainList,
-        days: 31,
+        days: 60,
         useCache: cacheExpired,
       }),
     });
@@ -45,9 +45,9 @@ export const GET: RequestHandler = async ({ cookies }) => {
 
     return json(data, { status: 200 });
   } catch (error: any) {
-    console.error(error);
+    // console.error(error);
     return json(
-      { message: "Failed to load current systems status.", success: false },
+      { message: "Failed to load current systems status." + error, success: false },
       { status: 500 },
     );
   }

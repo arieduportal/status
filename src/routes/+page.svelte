@@ -1,6 +1,6 @@
 <script lang="ts">
     import { onMount } from "svelte";
-    import { setMode, mode } from "mode-watcher";
+    import { setMode } from "mode-watcher";
     import {
         Moon,
         Sun,
@@ -11,7 +11,7 @@
     } from "@lucide/svelte";
     import * as Tooltip from "$lib/components/ui/tooltip/index.js";
     import { cn } from "$lib/utils.js";
-    import { PUBLIC_CDN, PUBLIC_API_V1_URL } from "$env/static/public";
+    import { PUBLIC_CDN } from "$env/static/public";
     import type { ComponentProps } from "svelte";
     import type {
         ConcurrentData,
@@ -37,9 +37,9 @@
         setMode(mode);
     };
 
-    const days = Array.from({ length: 31 }).map((_, i) => {
+    const days = Array.from({ length: 60 }).map((_, i) => {
         const d = new Date();
-        d.setDate(d.getDate() - i);
+        d.setDate(d.getDate() - (60 - i - 1));
         return d;
     });
 
@@ -53,8 +53,15 @@
 
     const toName = (domain: string) => {
         if (domain.includes("ai.")) return "AI Gateway";
-        if (domain.includes("static.")) return "Static Files";
+        if (domain.includes("static.")) return "CDN Service";
         if (domain.includes("api.")) return "API Service";
+        if (domain.includes("portal.")) return "Main Dashboard";
+        if (domain.includes("analytics.")) return "Analytics Service";
+        if (domain.includes("status.")) return "Status Page";
+        if (domain.includes("sites.")) return "Site Management";
+        if (domain.includes("pay.")) return "Payment Gateway";
+        if (domain.includes("demo.")) return "Demo Platform";
+        if (domain === "axiolot.com.ng") return "Home Page";
         return domain;
     };
 
@@ -97,6 +104,7 @@
 
             if (!response.ok) {
                 const errorData = await response.json().catch(() => ({}));
+                console.log(errorData);
                 throw new Error(errorData.message);
             }
 
@@ -114,6 +122,13 @@
         }
     }
 
+    const getStatusTextColor = (record?: DailyRecord) => {
+        if (!record || record.status === "ok") return "text-green-500";
+        if (record.status === "warning") return "text-yellow-500";
+        if (record.status === "error") return "text-red-500";
+        return "text-gray-500";
+    };
+
     onMount(() => {
         checkAllStatus();
         const storedMode = localStorage.getItem("mode");
@@ -124,6 +139,7 @@
             currentTheme = "system";
             setMode("system");
         }
+        dailyStatus();
     });
 </script>
 
@@ -290,40 +306,54 @@
                             class="w-full flex justify-between flex-row items-center mb-4 mt-2"
                         >
                             <p class="text-sm font-open">{toName(domain)}</p>
-                            <p class="text-sm font-code">
-                                {typedRecords[typedRecords.length - 1]?.title ??
-                                    "Operational"}
+                            <p
+                                class="text-sm font-code {getStatusTextColor(
+                                    typedRecords[0],
+                                )}"
+                            >
+                                {typedRecords[0]?.title ?? "Operational"}
                             </p>
                         </div>
                         <div
-                            class="grid grid-cols-30 justify-between w-full gap-x-2 items-center"
+                            class="grid grid-cols-60 justify-between w-full gap-x-2 items-center"
                         >
                             {#each days as day}
                                 {@const dayKey = fmt(day)}
-                                {@const rec = typedRecords.find(
-                                    (r) => r.date === dayKey,
-                                )}
+                                {@const rec = typedRecords.find((r) => {
+                                    // Match against the date format from API: "Nov 19 2025"
+                                    const apiDate = new Date(r.date);
+                                    const currentDay = new Date(day);
+                                    return (
+                                        apiDate.toDateString() ===
+                                        currentDay.toDateString()
+                                    );
+                                })}
                                 <Tooltip.Provider>
                                     <Tooltip.Root>
                                         <Tooltip.Trigger
-                                            class="w-3 h-12 rounded-xl {statusColor(
-                                                rec?.status!,
+                                            class="w-3 h-12 rounded-lg {statusColor(
+                                                rec?.status ?? 'unknown',
                                             )}"
                                         ></Tooltip.Trigger>
                                         <Tooltip.Content
-                                            class="p-2 rounded bg-neutral-900 text-white text-xs"
+                                            class="p-2 rounded-lg bg-slate-50 shadow-xl dark:bg-black text-black dark:text-white text-xs border min-h-28 min-w-80 px-5"
                                         >
-                                            <p class="font-bold">{dayKey}</p>
+                                            <p
+                                                class="font-medium text-base font-code my-2 pb-2"
+                                            >
+                                                {dayKey}
+                                            </p>
                                             {#if rec}
                                                 <div
-                                                    class="flex justify-between bg-slate-400 rounded-xl px-2 py-1 items-center {rec.title !=
-                                                        'Operational'}"
+                                                    class="flex justify-between bg-white dark:bg-gray-800 font-code text-black dark:text-slate-50 rounded-sm text-base px-2 py-2 mb-4 items-center"
                                                 >
                                                     <p>{rec.title}</p>
                                                     <p>{rec.time_down}</p>
                                                 </div>
                                                 {#if rec.status === "ok"}
-                                                    <p>
+                                                    <p
+                                                        class="text-center text-sm font-open"
+                                                    >
                                                         No downtime recorded on
                                                         this day
                                                     </p>
@@ -331,14 +361,23 @@
                                                 {#if rec.status !== "ok"}
                                                     <div class="mt-1">
                                                         <span
-                                                            class="font-semibold"
-                                                            >Description</span
+                                                            class="font-medium text-sm dark:text-gray-400 uppercase"
                                                         >
-                                                        <p>{rec.description}</p>
+                                                            Description
+                                                        </span>
+                                                        <p
+                                                            class="my-2 text-sm text-black dark:text-white"
+                                                        >
+                                                            {rec.description}
+                                                        </p>
                                                     </div>
                                                 {/if}
                                             {:else}
-                                                <p>No data for this day</p>
+                                                <p
+                                                    class="my-2 text-sm text-black dark:text-white font-open"
+                                                >
+                                                    No data for this day
+                                                </p>
                                             {/if}
                                         </Tooltip.Content>
                                     </Tooltip.Root>
@@ -351,7 +390,7 @@
                             <p
                                 class="text-gray-500 dark:text-gray-400 font-open text-sm"
                             >
-                                30 days ago
+                                60 days ago
                             </p>
                             <p
                                 class="text-gray-500 dark:text-gray-400 font-open text-sm"
