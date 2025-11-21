@@ -13,7 +13,6 @@
         if (!isDev) {
             LogRocket.init("71izqx/axiolot-hub");
         }
-        console.log(isDev)
     });
 </script>
 
