@@ -65,7 +65,7 @@
           </a>
         {:else}
           <button
-            on:click={() => location.reload()}
+            onclick={() => location.reload()}
             class="px-6 py-3 rounded-full font-semibold transition-all
                    bg-white text-[#6c63ff] border border-gray-200 hover:bg-gray-50"
           >

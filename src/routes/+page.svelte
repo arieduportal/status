@@ -65,15 +65,22 @@
     };
 
     const readableNotice = (msg: string) => {
-        return msg
-            .split(",")
-            .map((part) => part.trim())
-            .map((part) => {
-                const domain = part.split(" ")[0];
-                const friendly = toName(domain);
-                return `${friendly} is down`;
-            })
-            .join(", ");
+        if (msg.includes(",")) {
+            return msg
+                .split(",")
+                .map((part) => part.trim())
+                .map((part) => {
+                    const domain = part.split(" ")[0];
+                    const friendly = toName(domain);
+                    return `${friendly} is down`;
+                })
+                .join(", ");
+        }
+
+        const domain = msg.split(" ")[0];
+        const friendly = toName(domain);
+
+        return msg.replace(domain, friendly);
     };
 
     const statusColor = (status: string) => {
@@ -329,12 +336,11 @@
                             </p>
                         </div>
                         <div
-                            class="grid grid-cols-60 justify-between w-full gap-x-2 items-center"
+                            class="grid grid-cols-30 md:grid-cols-60 justify-between w-full gap-x-2 items-center"
                         >
-                            {#each days as day}
+                            {#each days as day, i}
                                 {@const dayKey = fmt(day)}
                                 {@const rec = typedRecords.find((r) => {
-                                    // Match against the date format from API: "Nov 19 2025"
                                     const apiDate = new Date(r.date);
                                     const currentDay = new Date(day);
                                     return (
@@ -345,9 +351,11 @@
                                 <Tooltip.Provider>
                                     <Tooltip.Root>
                                         <Tooltip.Trigger
-                                            class="w-3 h-12 rounded-lg {statusColor(
+                                            class="w-1 md:w-1 lg:w-2 h-12 rounded-lg {statusColor(
                                                 rec?.status ?? 'unknown',
-                                            )}"
+                                            )} {i < 30
+                                                ? 'hidden md:block'
+                                                : ''}"
                                         ></Tooltip.Trigger>
                                         <Tooltip.Content
                                             class="p-2 rounded-lg bg-slate-50 shadow-xl dark:bg-black text-black dark:text-white text-xs border min-h-28 min-w-80 px-5"
@@ -363,7 +371,7 @@
                                                 >
                                                     <p>{rec.title}</p>
                                                     <p
-                                                        class={rec.status !==
+                                                        class={rec.status ===
                                                         "ok"
                                                             ? "hidden"
                                                             : ""}
@@ -409,9 +417,14 @@
                             class="w-full flex justify-between flex-row items-center py-1"
                         >
                             <p
-                                class="text-gray-500 dark:text-gray-400 font-open text-sm"
+                                class="text-gray-500 dark:text-gray-400 font-open text-sm hidden md:block"
                             >
                                 60 days ago
+                            </p>
+                            <p
+                                class="text-gray-500 dark:text-gray-400 font-open text-sm md:hidden"
+                            >
+                                30 days ago
                             </p>
                             <p
                                 class="text-gray-500 dark:text-gray-400 font-open text-sm"
