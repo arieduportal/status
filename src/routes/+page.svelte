@@ -57,12 +57,23 @@
         if (domain.includes("api.")) return "API Service";
         if (domain.includes("portal.")) return "Main Dashboard";
         if (domain.includes("analytics.")) return "Analytics Service";
-        if (domain.includes("status.")) return "Status Page";
         if (domain.includes("sites.")) return "Site Management";
         if (domain.includes("pay.")) return "Payment Gateway";
         if (domain.includes("demo.")) return "Demo Platform";
         if (domain === "axiolot.com.ng") return "Home Page";
         return domain;
+    };
+
+    const readableNotice = (msg: string) => {
+        return msg
+            .split(",")
+            .map((part) => part.trim())
+            .map((part) => {
+                const domain = part.split(" ")[0];
+                const friendly = toName(domain);
+                return `${friendly} is down`;
+            })
+            .join(", ");
     };
 
     const statusColor = (status: string) => {
@@ -113,7 +124,10 @@
             if (data.success === false || data.message.includes("down")) {
                 errorStatus = true;
             }
-            message = data.message || "All systems are operational";
+            message =
+                data.message === ""
+                    ? "All systems are operational"
+                    : readableNotice(data.message);
         } catch (error: any) {
             errorStatus = true;
             message = error.message || "Failed to load current systems status.";
@@ -348,7 +362,14 @@
                                                     class="flex justify-between bg-white dark:bg-gray-800 font-code text-black dark:text-slate-50 rounded-sm text-base px-2 py-2 mb-4 items-center"
                                                 >
                                                     <p>{rec.title}</p>
-                                                    <p>{rec.time_down}</p>
+                                                    <p
+                                                        class={rec.status !==
+                                                        "ok"
+                                                            ? "hidden"
+                                                            : ""}
+                                                    >
+                                                        {rec.time_down}
+                                                    </p>
                                                 </div>
                                                 {#if rec.status === "ok"}
                                                     <p
