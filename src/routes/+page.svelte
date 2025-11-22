@@ -397,7 +397,9 @@
                                                         <p
                                                             class="my-2 text-sm text-black dark:text-white"
                                                         >
-                                                            {rec.description}
+                                                            {readableNotice(
+                                                                rec.description,
+                                                            )}
                                                         </p>
                                                     </div>
                                                 {/if}
