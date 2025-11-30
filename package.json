@@ -4,7 +4,7 @@
 	"version": "0.0.1",
 	"type": "module",
 	"scripts": {
-		"dev": "vite dev --host",
+		"dev": "vite dev --host --port 4500",
 		"build": "vite build",
 		"preview": "vite preview",
 		"prepare": "svelte-kit sync || echo ''",
@@ -37,6 +37,7 @@
 		"vite-plugin-singlefile": "^2.3.0"
 	},
 	"dependencies": {
+		"date-fns": "^4.1.0",
 		"logrocket": "^10.1.0",
 		"mode-watcher": "^1.1.0"
 	}
