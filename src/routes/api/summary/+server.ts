@@ -23,7 +23,7 @@ export const GET: RequestHandler = async ({ cookies }) => {
       body: JSON.stringify({
         domains: domainList,
         days: 60,
-        useCache: cacheExpired,
+        useCache: false,
       }),
     });
 
