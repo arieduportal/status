@@ -321,7 +321,14 @@
                 </div>
             {:else if domainSummary}
                 {#each Object.entries(domainSummary) as [domain, records] (domain)}
-                    {@const typedRecords = records as DailyRecord[]}
+                    {@const typedRecords = (records as DailyRecord[])
+                        .slice()
+                        .sort(
+                            (a, b) =>
+                                new Date(a.date).getTime() -
+                                new Date(b.date).getTime(),
+                        )}
+                    {@const latestRecord = typedRecords.at(-1)}
                     <div class="border-b pb-4 pt-1">
                         <div
                             class="w-full flex justify-between flex-row items-center mb-4 mt-2"
@@ -329,11 +336,10 @@
                             <p class="text-sm font-open">{toName(domain)}</p>
                             <p
                                 class="text-sm font-code {getStatusTextColor(
-                                    typedRecords[typedRecords.length - 1],
+                                    latestRecord,
                                 )}"
                             >
-                                {typedRecords[typedRecords.length - 1]?.title ??
-                                    "Unknown Status"}
+                                {latestRecord?.title ?? "Unknown Status"}
                             </p>
                         </div>
 
