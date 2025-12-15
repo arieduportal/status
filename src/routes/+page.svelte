@@ -329,12 +329,14 @@
                             <p class="text-sm font-open">{toName(domain)}</p>
                             <p
                                 class="text-sm font-code {getStatusTextColor(
-                                    typedRecords[0],
+                                    typedRecords[typedRecords.length - 1],
                                 )}"
                             >
-                                {typedRecords[0]?.title ?? "Operational"}
+                                {typedRecords[typedRecords.length - 1]?.title ??
+                                    "Unknown Status"}
                             </p>
                         </div>
+
                         <div
                             class="grid grid-cols-30 md:grid-cols-60 justify-between w-full gap-x-2 items-center"
                         >
