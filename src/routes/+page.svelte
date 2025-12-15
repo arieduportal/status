@@ -171,17 +171,17 @@
 <div class="bg-slate-50 dark:bg-black min-h-screen font-open">
     <div class="container mx-auto p-2 pt-0 md:p-4">
         <div class="flex justify-between items-center">
-            <div class="py-8 px-6 pl-8">
+            <div class="py-8 px-0 md:px-6 md:pl-8">
                 <a
                     href="https://www.axiolot.com.ng"
                     target="_blank"
-                    class="relative w-20 flex flex-row justify-start items-center"
+                    class="relative inline-flex items-center shrink-0 w-fit max-w-fit"
                 >
                     <img
                         src="{PUBLIC_CDN}/image/Wzcdkj2.png"
                         srcset="{PUBLIC_CDN}/image/Wzcdkj2.png"
                         loading="lazy"
-                        class="block dark:hidden w-12 h-12"
+                        class="block dark:hidden w-10 md:w-12 h-10 md:h-12"
                         alt="logo"
                         decoding="async"
                     />
@@ -189,7 +189,7 @@
                         src="{PUBLIC_CDN}/image/MiXZUxYV2.png"
                         srcset="{PUBLIC_CDN}/image/MiXZUxYV2.png"
                         loading="lazy"
-                        class="hidden dark:block w-12 h-12"
+                        class="hidden dark:block w-10 md:w-12 h-10 md:h-12"
                         alt="logo"
                         decoding="async"
                     />
@@ -228,7 +228,7 @@
                 </a>
             </div>
             <div
-                class="rounded-full border-[0.5px] gap-x-3 flex justify-evenly items-center px-3 py-1"
+                class="rounded-full border-[0.5px] gap-x-3 flex justify-evenly items-center px-1 md:px-3 py-1"
             >
                 <button
                     onclick={() => changeMode("light")}
@@ -314,7 +314,7 @@
                 </div>
             {:else if errorPage}
                 <div class="flex items-center justify-center min-h-[50vh]">
-                    <p class="text-base font-open font-medium">
+                    <p class="text-base font-open font-medium text-center">
                         We encountered an error while fetching the data. Please
                         try again later.
                     </p>
